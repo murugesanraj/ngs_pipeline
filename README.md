@@ -1,7 +1,7 @@
-# Hellbender NGS Pipeline
+# NGS Pipeline
 
 A reproducible Nextflow DSL2 pipeline for short-read NGS analysis on the
-University of Missouri Hellbender cluster, with a read-only Shiny results portal
+University of Missouri HPC cluster, with a read-only Shiny results portal
 for authorized HPC users.
 
 Nextflow is the primary execution engine in release 1.1.0. The repository also
@@ -24,9 +24,9 @@ diagnostic pipeline.
 Every mode also creates MultiQC, checksums, Nextflow execution provenance, and
 `portal/manifest.json` for the Shiny app.
 
-## Hellbender defaults
+## HPC defaults
 
-The public configuration follows the current Hellbender documentation:
+The public configuration follows the current HPC documentation:
 
 - CPU partition: `general`
 - maximum public-partition wall time: 2 days
@@ -38,7 +38,7 @@ The public configuration follows the current Hellbender documentation:
 
 Partition names, allocations, and module versions can change. Run the preflight
 on a compute node before the first production run and check the official
-[Hellbender documentation](https://docs.itrss.umsystem.edu/pub/hpc/hellbender).
+[HPC documentation](https://docs.itrss.umsystem.edu/pub/hpc/hpc).
 
 ## Repository layout
 
@@ -46,7 +46,7 @@ on a compute node before the first production run and check the official
 main.nf                    Nextflow DSL2 entry point
 nextflow/modules/          Common, RNA, DNA, and assembly processes
 nextflow.config            Version, resources, environments, and profiles
-conf/                      Hellbender, single-node, CI, and priority configs
+conf/                      HPC, single-node, CI, and priority configs
 workflow/                  Shared scripts plus the Snakemake fallback
 envs/                      Pinned controller and per-process Conda environments
 config/                    Safe examples only; no client data or credentials
@@ -57,15 +57,15 @@ docs/                      Operations, analysis, deployment, and handoff guides
 tests/                     Tiny non-sensitive fixtures and automated tests
 ```
 
-## Quick start on Hellbender
+## Quick start on HPC
 
 Do not solve environments or run analyses on a login node.
 
 ```bash
 # 1. Clone into individual data or an approved group allocation.
 cd "$HOME/data"
-git clone https://github.com/YOUR_ORG/hellbender-ngs-pipeline.git
-cd hellbender-ngs-pipeline
+git clone https://github.com/YOUR_ORG/hpc-ngs-pipeline.git
+cd hpc-ngs-pipeline
 
 # 2. Obtain an interactive allocation for setup and validation.
 srun -p interactive --time=02:00:00 --mem=16G \
@@ -144,7 +144,7 @@ resume behavior, cleanup, and direct development commands.
 ## Starting from BCL files
 
 Illumina BCL Convert is licensed software and is not redistributed or installed
-by this repository. If it is approved and available on Hellbender, use:
+by this repository. If it is approved and available on HPC, use:
 
 ```bash
 bin/submit_bcl_convert.sh \
@@ -161,13 +161,13 @@ assay-specific preprocessing module.
 
 The Shiny app only reads published pipeline outputs. It does not run analyses,
 accept arbitrary filesystem paths, or store passwords. Each client launches it
-through Hellbender Open OnDemand/RStudio, so Unix identity and approved group
+through HPC Open OnDemand/RStudio, so Unix identity and approved group
 permissions remain the access-control boundary.
 
 ```bash
 module load miniconda3
 source "$(conda info --base)/etc/profile.d/conda.sh"
-conda activate "$HOME/data/conda/envs/hellbender-ngs-shiny"
+conda activate "$HOME/data/conda/envs/hpc-ngs-shiny"
 export NGS_PORTAL_ROOT=/cluster/pixstor/GROUP/ngs_portal
 Rscript app/run_app.R
 ```
@@ -224,7 +224,7 @@ compatibility dry runs. Only tiny synthetic fixtures are used.
 The release 1.0.0 interface is retained for users who need Snakemake:
 
 ```bash
-bin/bootstrap_hellbender.sh --with-shiny
+bin/bootstrap_hpc.sh --with-shiny
 bin/preflight.sh --create-envs /path/to/project/config.yaml
 bin/submit_pipeline.sh --config /path/to/project/config.yaml
 ```
@@ -235,7 +235,7 @@ Choose one engine per project run; their work caches are independent.
 ## Documentation
 
 - [Nextflow operation and profiles](docs/NEXTFLOW.md)
-- [Hellbender setup and resource tuning](docs/HELLBENDER.md)
+- [HPC setup and resource tuning](docs/HPC.md)
 - [Mode-specific inputs and outputs](docs/ANALYSIS_MODES.md)
 - [Secure Shiny/Open OnDemand deployment](docs/PORTAL_DEPLOYMENT.md)
 - [Client handoff checklist](docs/CLIENT_HANDOFF.md)
@@ -244,5 +244,5 @@ Choose one engine per project run; their work caches are independent.
 ## Citation
 
 See [CITATION.cff](CITATION.cff). Publications should also cite the primary
-tools used by the selected mode and the current institutional Hellbender
+tools used by the selected mode and the current institutional HPC
 acknowledgement.
