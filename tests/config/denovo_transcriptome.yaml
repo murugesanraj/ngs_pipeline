@@ -1,0 +1,30 @@
+pipeline:
+  version: "1.1.0-test"
+project:
+  id: "tiny_denovo_transcriptome"
+  display_name: "Tiny de novo transcriptome test"
+  output_dir: "tests/work/denovo_transcriptome"
+  sample_sheet: "tests/config/samples_single.tsv"
+analysis:
+  mode: "denovo_transcriptome"
+  layout: "single"
+reference:
+  fasta: null
+  annotation_gtf: null
+qc:
+  fastp:
+    qualified_quality_phred: 20
+    unqualified_percent_limit: 40
+    length_required: 20
+  fastq_screen:
+    enabled: false
+    config: null
+assembly:
+  genome_assembler: "spades"
+  minimum_contig_length: 100
+  busco:
+    enabled: false
+    lineage_path: null
+portal:
+  enabled: true
+  description: "Non-sensitive CI fixture"

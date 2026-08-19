@@ -1,0 +1,13 @@
+name: hellbender-ngs-qc
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - fastp>=0.24,<1
+  - fastqc>=0.12,<1
+  - fastq-screen>=0.16,<1
+  - bowtie2>=2.5,<3
+  - multiqc>=1.30,<2
+  - pigz>=2.8,<3
+  - python>=3.11,<3.13
+  - pyyaml>=6,<7

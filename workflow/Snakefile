@@ -1,0 +1,151 @@
+"""Hellbender NGS Pipeline entry point."""
+
+from pathlib import Path
+import sys
+
+
+WORKFLOW_DIR = Path(workflow.basedir).resolve()
+REPO_DIR = WORKFLOW_DIR.parent
+sys.path.insert(0, str(WORKFLOW_DIR / "lib"))
+
+from pipeline_config import ConfigError, validate_and_load  # noqa: E402
+
+
+try:
+    STATE = validate_and_load(config)
+except ConfigError as exc:
+    raise WorkflowError(str(exc)) from exc
+
+PIPELINE_VERSION = str(config.get("pipeline", {}).get("version", "1.1.0"))
+PROJECT_DIR = STATE["output_dir"]
+RESULTS_DIR = f"{PROJECT_DIR}/results"
+LOG_DIR = f"{PROJECT_DIR}/logs"
+BENCHMARK_DIR = f"{PROJECT_DIR}/benchmarks"
+PORTAL_DIR = f"{PROJECT_DIR}/portal"
+SAMPLES = STATE["samples"]
+SAMPLE_IDS = STATE["sample_ids"]
+PAIRED = STATE["paired"]
+MODE = STATE["mode"]
+
+QC_ENV = str(REPO_DIR / "envs" / "qc.yaml")
+RNA_ENV = str(REPO_DIR / "envs" / "rna.yaml")
+DNA_ENV = str(REPO_DIR / "envs" / "dna.yaml")
+ASSEMBLY_ENV = str(REPO_DIR / "envs" / "assembly.yaml")
+REPORT_ENV = str(REPO_DIR / "envs" / "report.yaml")
+SCRIPT_DIR = str(WORKFLOW_DIR / "scripts")
+
+REF_FASTA = f"{PROJECT_DIR}/reference/genome.fa"
+REF_GTF = f"{PROJECT_DIR}/reference/annotation.gtf"
+
+TRIM_R1_PATTERN = f"{RESULTS_DIR}/qc/fastp/{{sample}}.R1.trimmed.fastq.gz"
+TRIM_R2_PATTERN = f"{RESULTS_DIR}/qc/fastp/{{sample}}.R2.trimmed.fastq.gz"
+FASTP_JSON_PATTERN = f"{RESULTS_DIR}/qc/fastp/{{sample}}.fastp.json"
+FASTP_HTML_PATTERN = f"{RESULTS_DIR}/qc/fastp/{{sample}}.fastp.html"
+
+RAW_FASTQC_TARGETS = [
+    f"{RESULTS_DIR}/qc/fastqc/raw/{sample}.R1_fastqc.zip" for sample in SAMPLE_IDS
+]
+TRIM_FASTQC_TARGETS = [
+    f"{RESULTS_DIR}/qc/fastqc/trimmed/{sample}.R1_fastqc.zip" for sample in SAMPLE_IDS
+]
+if PAIRED:
+    RAW_FASTQC_TARGETS += [
+        f"{RESULTS_DIR}/qc/fastqc/raw/{sample}.R2_fastqc.zip" for sample in SAMPLE_IDS
+    ]
+    TRIM_FASTQC_TARGETS += [
+        f"{RESULTS_DIR}/qc/fastqc/trimmed/{sample}.R2_fastqc.zip" for sample in SAMPLE_IDS
+    ]
+
+FASTP_TARGETS = [
+    f"{RESULTS_DIR}/qc/fastp/{sample}.fastp.json" for sample in SAMPLE_IDS
+]
+SCREEN_TARGETS = (
+    [f"{RESULTS_DIR}/qc/fastq_screen/{sample}_screen.txt" for sample in SAMPLE_IDS]
+    if STATE["screen_enabled"]
+    else []
+)
+COMMON_QC_TARGETS = RAW_FASTQC_TARGETS + TRIM_FASTQC_TARGETS + FASTP_TARGETS + SCREEN_TARGETS
+
+MODE_TARGETS = []
+MODE_QC_TARGETS = []
+
+if MODE == "bulk_rna":
+    STAR_INDEX_DIR = STATE["star_index"] or f"{PROJECT_DIR}/reference/star_index"
+    STAR_INDEX_READY = (
+        f"{STAR_INDEX_DIR}/Genome"
+        if STATE["star_index"]
+        else f"{STAR_INDEX_DIR}/.complete"
+    )
+    RNA_BAMS = [f"{RESULTS_DIR}/rna/alignment/{sample}.bam" for sample in SAMPLE_IDS]
+    RNA_LOGS = [f"{RESULTS_DIR}/rna/alignment/{sample}.Log.final.out" for sample in SAMPLE_IDS]
+    RNA_BIGWIGS = [f"{RESULTS_DIR}/rna/tracks/{sample}.CPM.bw" for sample in SAMPLE_IDS]
+    FEATURECOUNTS_RAW = f"{RESULTS_DIR}/rna/counts/featurecounts.raw.tsv"
+    FEATURECOUNTS_SUMMARY = f"{FEATURECOUNTS_RAW}.summary"
+    COUNTS_MATRIX = f"{RESULTS_DIR}/rna/counts/gene_counts.tsv"
+    DESEQ2_DIR = f"{RESULTS_DIR}/rna/deseq2"
+    MODE_TARGETS = RNA_BAMS + RNA_BIGWIGS + [COUNTS_MATRIX]
+    if STATE["contrast_ids"]:
+        MODE_TARGETS.append(DESEQ2_DIR)
+    MODE_QC_TARGETS = RNA_LOGS + [FEATURECOUNTS_SUMMARY]
+
+elif MODE == "dna_reseq":
+    BWA_PREFIX = STATE["bwa_index_prefix"] or f"{PROJECT_DIR}/reference/bwa/genome.fa"
+    BWA_INDEX_READY = (
+        f"{BWA_PREFIX}.0123"
+        if STATE["bwa_index_prefix"]
+        else f"{PROJECT_DIR}/reference/bwa/.complete"
+    )
+    DNA_BAMS = [f"{RESULTS_DIR}/dna/alignment/{sample}.markdup.bam" for sample in SAMPLE_IDS]
+    DNA_FLAGSTATS = [f"{RESULTS_DIR}/dna/qc/{sample}.flagstat.txt" for sample in SAMPLE_IDS]
+    DNA_COVERAGE = [f"{RESULTS_DIR}/dna/qc/{sample}.mosdepth.summary.txt" for sample in SAMPLE_IDS]
+    DNA_VCFS = [f"{RESULTS_DIR}/dna/variants/{sample}.filtered.vcf.gz" for sample in SAMPLE_IDS]
+    MODE_TARGETS = DNA_BAMS + DNA_COVERAGE
+    MODE_QC_TARGETS = DNA_FLAGSTATS + DNA_COVERAGE
+    if bool(config.get("dna", {}).get("call_variants", True)):
+        MODE_TARGETS += DNA_VCFS
+        MODE_QC_TARGETS += [f"{RESULTS_DIR}/dna/variants/{sample}.bcftools.stats.txt" for sample in SAMPLE_IDS]
+
+else:
+    ASSEMBLY_FASTAS = [f"{RESULTS_DIR}/assembly/{sample}/contigs.fasta" for sample in SAMPLE_IDS]
+    QUAST_REPORTS = [f"{RESULTS_DIR}/assembly/{sample}/quast/report.tsv" for sample in SAMPLE_IDS]
+    MODE_TARGETS = ASSEMBLY_FASTAS + QUAST_REPORTS
+    MODE_QC_TARGETS = QUAST_REPORTS
+    if STATE["busco_enabled"]:
+        BUSCO_TARGETS = [
+            f"{RESULTS_DIR}/assembly/{sample}/busco/.complete" for sample in SAMPLE_IDS
+        ]
+        MODE_TARGETS += BUSCO_TARGETS
+        MODE_QC_TARGETS += BUSCO_TARGETS
+
+MULTIQC_REPORT = f"{RESULTS_DIR}/multiqc/multiqc_report.html"
+PORTAL_MANIFEST = f"{PORTAL_DIR}/manifest.json"
+
+wildcard_constraints:
+    sample="[A-Za-z0-9][A-Za-z0-9._-]{0,99}",
+    read="R[12]"
+
+
+onstart:
+    for relative in (
+        "fastqc/raw", "fastqc/trimmed", "fastp", "fastq_screen",
+        "reference", "star", "bigwig", "featurecounts", "deseq2",
+        "bwa", "mosdepth", "variants", "assembly", "quast", "busco", "multiqc",
+    ):
+        Path(BENCHMARK_DIR, relative).mkdir(parents=True, exist_ok=True)
+
+
+rule all:
+    input:
+        MODE_TARGETS,
+        MULTIQC_REPORT,
+        PORTAL_MANIFEST
+
+
+include: "rules/common.smk"
+
+if MODE == "bulk_rna":
+    include: "rules/rna.smk"
+elif MODE == "dna_reseq":
+    include: "rules/dna.smk"
+else:
+    include: "rules/assembly.smk"

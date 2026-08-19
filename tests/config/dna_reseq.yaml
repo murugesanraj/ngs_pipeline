@@ -1,0 +1,35 @@
+pipeline:
+  version: "1.1.0-test"
+project:
+  id: "tiny_dna"
+  display_name: "Tiny DNA test"
+  output_dir: "tests/work/dna"
+  sample_sheet: "tests/config/samples.tsv"
+analysis:
+  mode: "dna_reseq"
+  layout: "paired"
+reference:
+  fasta: "tests/data/genome.fa"
+  annotation_gtf: null
+  star_index: null
+  bwa_index_prefix: null
+qc:
+  fastp:
+    qualified_quality_phred: 20
+    unqualified_percent_limit: 40
+    length_required: 20
+    detect_adapter_for_pe: true
+  fastq_screen:
+    enabled: false
+    config: null
+dna:
+  call_variants: true
+  minimum_variant_quality: 20
+  minimum_depth: 2
+assembly:
+  genome_assembler: "spades"
+  busco:
+    enabled: false
+portal:
+  enabled: true
+  description: "Non-sensitive CI fixture"

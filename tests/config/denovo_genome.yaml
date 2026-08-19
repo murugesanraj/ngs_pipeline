@@ -1,0 +1,31 @@
+pipeline:
+  version: "1.1.0-test"
+project:
+  id: "tiny_denovo_genome"
+  display_name: "Tiny de novo genome test"
+  output_dir: "tests/work/denovo_genome"
+  sample_sheet: "tests/config/samples.tsv"
+analysis:
+  mode: "denovo_genome"
+  layout: "paired"
+reference:
+  fasta: null
+  annotation_gtf: null
+qc:
+  fastp:
+    qualified_quality_phred: 20
+    unqualified_percent_limit: 40
+    length_required: 20
+    detect_adapter_for_pe: true
+  fastq_screen:
+    enabled: false
+    config: null
+assembly:
+  genome_assembler: "spades"
+  minimum_contig_length: 100
+  busco:
+    enabled: false
+    lineage_path: null
+portal:
+  enabled: true
+  description: "Non-sensitive CI fixture"

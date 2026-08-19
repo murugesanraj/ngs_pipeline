@@ -1,0 +1,6 @@
+sample_id	condition	batch	read1	read2
+control_1	control	b1	tests/data/control_1_R1.fastq	tests/data/control_1_R2.fastq
+control_2	control	b1	tests/data/control_2_R1.fastq	tests/data/control_2_R2.fastq
+treated_1	treated	b1	tests/data/treated_1_R1.fastq	tests/data/treated_1_R2.fastq
+treated_2	treated	b1	tests/data/treated_2_R1.fastq	tests/data/treated_2_R2.fastq
+

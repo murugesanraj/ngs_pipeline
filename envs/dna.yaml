@@ -1,0 +1,10 @@
+name: hellbender-ngs-dna
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bwa-mem2>=2.2,<3
+  - samtools>=1.21,<2
+  - bcftools>=1.21,<2
+  - mosdepth>=0.3.10,<1
+  - htslib>=1.21,<2

@@ -1,0 +1,14 @@
+name: hellbender-ngs-report
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python>=3.11,<3.13
+  - pandas>=2.2,<3
+  - pyyaml>=6,<7
+  - r-base>=4.4,<4.6
+  - r-ggplot2>=3.5,<4
+  - r-pheatmap>=1.0.12,<2
+  - r-optparse>=1.7,<2
+  - r-rcolorbrewer>=1.1,<2
+  - bioconductor-deseq2>=1.44,<2

@@ -1,0 +1,67 @@
+pipeline:
+  version: "1.1.0"
+
+project:
+  # Safe identifier used in filenames and the portal (letters, digits, ._-).
+  id: "example_project"
+  display_name: "Example NGS Project"
+  # Use $HOME/data for small individual work or an approved group allocation.
+  output_dir: "/cluster/pixstor/GROUP/ngs-projects/example_project"
+  sample_sheet: "/cluster/pixstor/GROUP/ngs-projects/example_project/samples.tsv"
+
+analysis:
+  # bulk_rna | dna_reseq | denovo_genome | denovo_transcriptome
+  mode: "bulk_rna"
+  # All samples in one run must use the same layout.
+  layout: "paired"
+
+reference:
+  # Required for bulk_rna and dna_reseq. Leave null for de novo modes.
+  fasta: "/cluster/pixstor/GROUP/references/species/genome.fa"
+  # Required only for bulk_rna.
+  annotation_gtf: "/cluster/pixstor/GROUP/references/species/annotation.gtf"
+  # Optional reusable indexes. If null, indexes are built under output_dir.
+  star_index: null
+  bwa_index_prefix: null
+
+qc:
+  fastp:
+    qualified_quality_phred: 20
+    unqualified_percent_limit: 40
+    length_required: 36
+    detect_adapter_for_pe: true
+  fastq_screen:
+    enabled: false
+    config: null
+    subset: 100000
+
+rna:
+  # unstranded | forward | reverse
+  strandedness: "reverse"
+  # Ordered model terms; the last term is usually the biological condition.
+  design: ["condition"]
+  contrasts: "/cluster/pixstor/GROUP/ngs-projects/example_project/contrasts.tsv"
+  alpha: 0.05
+  min_total_count: 10
+  star_sjdb_overhang: 149
+  featurecounts_feature_type: "exon"
+  featurecounts_id_attribute: "gene_id"
+
+dna:
+  call_variants: true
+  minimum_variant_quality: 20
+  minimum_depth: 5
+
+assembly:
+  # denovo_genome: spades | megahit; denovo_transcriptome always uses Trinity.
+  genome_assembler: "spades"
+  minimum_contig_length: 500
+  busco:
+    enabled: false
+    # Use a locally installed lineage directory and offline mode on compute nodes.
+    lineage_path: null
+
+portal:
+  enabled: true
+  # Exposed in the client-facing manifest; keep notes non-sensitive.
+  description: "Short-read NGS analysis"

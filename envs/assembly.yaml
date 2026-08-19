@@ -1,0 +1,12 @@
+name: hellbender-ngs-assembly
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - spades>=4.1,<5
+  - megahit>=1.2.9,<2
+  - trinity>=2.15.2,<3
+  - quast>=5.3,<6
+  - busco>=6,<7
+  - samtools>=1.21,<2
+  - seqkit>=2.9,<3

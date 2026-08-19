@@ -1,0 +1,17 @@
+app:
+  title: "NGS Results Portal"
+  institution: "University of Missouri"
+  refresh_seconds: 60
+  max_download_mb: 250
+  # Optional display-only support contact; do not put credentials here.
+  support_email: "bioinformatics@example.edu"
+
+paths:
+  # NGS_PORTAL_ROOT overrides this at runtime.
+  portal_root: "/cluster/pixstor/GROUP/ngs_portal"
+
+display:
+  primary_color: "#111111"
+  accent_color: "#F1B82D"
+  max_table_rows: 50000
+

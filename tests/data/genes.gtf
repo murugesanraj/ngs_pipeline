@@ -1,0 +1,4 @@
+chrTest	test	gene	1	120	.	+	.	gene_id "gene1"; gene_name "GENE1";
+chrTest	test	transcript	1	120	.	+	.	gene_id "gene1"; transcript_id "tx1"; gene_name "GENE1";
+chrTest	test	exon	1	120	.	+	.	gene_id "gene1"; transcript_id "tx1"; gene_name "GENE1";
+

@@ -1,0 +1,74 @@
+# Snakemake 9 profile for Hellbender's current public CPU resources.
+executor: slurm
+jobs: 64
+cores: 512
+software-deployment-method: conda
+conda-prefix: .snakemake/conda
+latency-wait: 120
+rerun-incomplete: true
+keep-going: true
+printshellcmds: true
+show-failed-logs: true
+restart-times: 1
+max-jobs-per-second: 5
+max-status-checks-per-second: 2
+slurm-no-account: true
+slurm-logdir: logs/slurm
+slurm-keep-successful-logs: false
+slurm-pass-command-as-script: true
+default-resources:
+  slurm_partition: general
+  runtime: 60
+  mem_mb: 4000
+  disk_mb: 10000
+  tmpdir: "/local/scratch/$USER"
+
+# Rule-specific scientific resources remain easy to override without editing
+# the workflow. All public-partition runtimes stay at or below 2 days.
+set-resources:
+  fastp:
+    runtime: 240
+    mem_mb: 16000
+  fastqc_raw:
+    runtime: 120
+    mem_mb: 8000
+  fastqc_trimmed:
+    runtime: 120
+    mem_mb: 8000
+  fastq_screen:
+    runtime: 240
+    mem_mb: 16000
+  star_index:
+    runtime: 720
+    mem_mb: 160000
+  star_align:
+    runtime: 720
+    mem_mb: 64000
+  featurecounts:
+    runtime: 240
+    mem_mb: 32000
+  deseq2:
+    runtime: 360
+    mem_mb: 64000
+  bwa_index:
+    runtime: 480
+    mem_mb: 32000
+  bwa_align_markdup:
+    runtime: 1440
+    mem_mb: 64000
+  call_variants:
+    runtime: 1440
+    mem_mb: 32000
+  assemble_spades:
+    runtime: 2880
+    mem_mb: 240000
+  assemble_megahit:
+    runtime: 2880
+    mem_mb: 240000
+  assemble_trinity:
+    runtime: 2880
+    mem_mb: 240000
+  busco:
+    runtime: 1440
+    mem_mb: 64000
+

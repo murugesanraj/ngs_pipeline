@@ -1,0 +1,19 @@
+[project]
+name = "hellbender-ngs-pipeline"
+version = "1.1.0"
+requires-python = ">=3.11"
+dependencies = ["PyYAML>=6,<7"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<9", "ruff>=0.16,<1"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

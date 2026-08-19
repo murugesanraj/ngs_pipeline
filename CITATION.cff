@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this workflow, please cite the repository and the primary tools used by your selected analysis mode."
+title: "Hellbender NGS Pipeline"
+type: software
+authors:
+  - family-names: "Raju"
+    given-names: "Murugesan"
+version: 1.1.0
+date-released: 2026-08-19
+license: MIT
+repository-code: "https://github.com/YOUR_ORG/hellbender-ngs-pipeline"
+keywords:
+  - bioinformatics
+  - RNA-seq
+  - DNA sequencing
+  - genome assembly
+  - Nextflow
+  - Snakemake
+  - SLURM
+  - Hellbender

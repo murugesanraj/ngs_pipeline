@@ -1,0 +1,11 @@
+executor: local
+cores: 2
+latency-wait: 10
+rerun-incomplete: true
+printshellcmds: true
+default-resources:
+  runtime: 60
+  mem_mb: 4000
+  disk_mb: 10000
+  tmpdir: "/tmp"
+

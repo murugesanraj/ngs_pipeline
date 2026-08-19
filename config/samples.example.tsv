@@ -1,0 +1,6 @@
+sample_id	condition	batch	read1	read2
+control_1	control	batch1	/cluster/pixstor/GROUP/project/fastq/control_1_R1.fastq.gz	/cluster/pixstor/GROUP/project/fastq/control_1_R2.fastq.gz
+control_2	control	batch1	/cluster/pixstor/GROUP/project/fastq/control_2_R1.fastq.gz	/cluster/pixstor/GROUP/project/fastq/control_2_R2.fastq.gz
+treated_1	treated	batch1	/cluster/pixstor/GROUP/project/fastq/treated_1_R1.fastq.gz	/cluster/pixstor/GROUP/project/fastq/treated_1_R2.fastq.gz
+treated_2	treated	batch1	/cluster/pixstor/GROUP/project/fastq/treated_2_R1.fastq.gz	/cluster/pixstor/GROUP/project/fastq/treated_2_R2.fastq.gz
+

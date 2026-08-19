@@ -1,0 +1,43 @@
+pipeline:
+  version: "1.1.0-test"
+project:
+  id: "tiny_bulk_rna"
+  display_name: "Tiny bulk RNA test"
+  output_dir: "tests/work/bulk_rna"
+  sample_sheet: "tests/config/samples.tsv"
+analysis:
+  mode: "bulk_rna"
+  layout: "paired"
+reference:
+  fasta: "tests/data/genome.fa"
+  annotation_gtf: "tests/data/genes.gtf"
+  star_index: null
+  bwa_index_prefix: null
+qc:
+  fastp:
+    qualified_quality_phred: 20
+    unqualified_percent_limit: 40
+    length_required: 20
+    detect_adapter_for_pe: true
+  fastq_screen:
+    enabled: false
+    config: null
+    subset: 1000
+rna:
+  strandedness: "unstranded"
+  design: ["condition"]
+  contrasts: "tests/config/contrasts.tsv"
+  star_sjdb_overhang: 49
+  featurecounts_feature_type: "exon"
+  featurecounts_id_attribute: "gene_id"
+dna:
+  call_variants: false
+assembly:
+  genome_assembler: "spades"
+  minimum_contig_length: 100
+  busco:
+    enabled: false
+    lineage_path: null
+portal:
+  enabled: true
+  description: "Non-sensitive CI fixture"

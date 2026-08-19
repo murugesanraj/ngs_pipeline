@@ -1,0 +1,23 @@
+# Copy this file to profiles/hellbender-priority/config.v9+.yaml and replace
+# the two placeholders. The resulting directory is ignored by Git.
+executor: slurm
+jobs: 64
+cores: 512
+software-deployment-method: conda
+conda-prefix: .snakemake/conda
+latency-wait: 120
+rerun-incomplete: true
+keep-going: true
+printshellcmds: true
+show-failed-logs: true
+restart-times: 1
+slurm-logdir: logs/slurm
+slurm-pass-command-as-script: true
+default-resources:
+  slurm_partition: "REPLACE_WITH_PRIORITY_PARTITION"
+  slurm_account: "REPLACE_WITH_INVESTOR_ACCOUNT"
+  runtime: 60
+  mem_mb: 4000
+  disk_mb: 10000
+  tmpdir: "/local/scratch/$USER"
+

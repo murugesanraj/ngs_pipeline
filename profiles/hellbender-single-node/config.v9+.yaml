@@ -1,0 +1,20 @@
+# Use inside one SLURM allocation for dry runs, debugging, and modest datasets.
+executor: local
+cores: 32
+resources:
+  mem_mb: 240000
+  disk_mb: 1000000
+software-deployment-method: conda
+conda-prefix: .snakemake/conda
+latency-wait: 60
+rerun-incomplete: true
+keep-going: true
+printshellcmds: true
+show-failed-logs: true
+restart-times: 0
+default-resources:
+  runtime: 60
+  mem_mb: 4000
+  disk_mb: 10000
+  tmpdir: "/local/scratch/$USER"
+

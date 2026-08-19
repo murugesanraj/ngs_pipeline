@@ -1,0 +1,11 @@
+name: hellbender-ngs-rna
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - star>=2.7.11,<2.8
+  - samtools>=1.21,<2
+  - subread>=2.0.8,<3
+  - deeptools>=3.5,<4
+  - python>=3.11,<3.13
+  - pandas>=2.2,<3
